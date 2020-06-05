@@ -10,6 +10,7 @@ Allows you to credit killer of player knocked into void
 * When player gets kicked into the void, his death will be announced, and killer, the last person who punched him, will get his credit.
 * It does have tab autocomplete, although this feature won't be very useful as there's only one command and one argument. Oh well, at least my inner aesthet is satisfied
 * Also the plugin can run a command if specified in the config
+* Also works with bow shots
 
 ## Commands
 
