@@ -3,6 +3,8 @@ Allows you to credit killer of player knocked into void
 
 *To download, go to https://github.com/prosteDeniGC/CreditVoidKill/releases*
 
+*Spigot link: https://www.spigotmc.org/resources/creditvoidkill.79610/*
+
 ###### Versions: 1.13 - 1.15 confirmed, will most probably work with 1.12 and 1.16+ for a few versions too
 
 ## How does it work?
