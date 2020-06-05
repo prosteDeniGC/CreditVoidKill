@@ -4,23 +4,28 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public final class CreditVoidKill extends JavaPlugin implements Listener {
 
     HashMap<String, String> map = new HashMap<>();
     HashMap<String, Integer> timerMap = new HashMap<>();
+    HashMap<Integer, String> arrowMap = new HashMap<>();
 
     @Override
     public void onEnable() {
@@ -111,7 +116,108 @@ public final class CreditVoidKill extends JavaPlugin implements Listener {
                     }
                 }, (getConfig().getInt("Timer") * 20L));
             }
+
+            // Arrow part here
+
+        } else if (e.getDamager() instanceof Arrow && e.getEntity() instanceof Player){
+            if (arrowMap != null) {
+                if (arrowMap.containsKey(e.getDamager().getEntityId())) {
+                    if (map.containsKey(e.getEntity().getName())){
+                        if (!(map.get(e.getEntity().getName()).equals(e.getDamager().getName()))) {
+                            map.remove(e.getEntity().getName());
+                            map.put(e.getEntity().getName(), arrowMap.get(e.getDamager().getEntityId()));
+
+                            if (timerMap.get(e.getEntity().getName()) != null) {
+                                if (timerMap.get(e.getEntity().getName()) != 4) {
+                                    timerMap.remove(e.getEntity().getName());
+                                    timerMap.put(e.getEntity().getName(), 4);
+                                }
+                            }
+
+                            Bukkit.getScheduler().scheduleAsyncDelayedTask(this, new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (timerMap.get(e.getEntity().getName()) != null) {
+                                        if (timerMap.get(e.getEntity().getName()) == 4) {
+                                            if (map.get(e.getEntity().getName()) != null) {
+                                                map.remove(e.getEntity().getName());
+                                            }
+                                            timerMap.remove(e.getEntity().getName());
+                                        }
+                                    }
+                                }
+                            }, (getConfig().getInt("Timer") * 20L));
+                        } else {
+                            map.put(e.getEntity().getName(), e.getDamager().getName());
+
+                            if (timerMap.get(e.getEntity().getName()) != null) {
+                                if (timerMap.get(e.getEntity().getName()) != 5) {
+                                    timerMap.remove(e.getEntity().getName());
+                                    timerMap.put(e.getEntity().getName(), 5);
+                                }
+                            }
+
+                            Bukkit.getScheduler().scheduleAsyncDelayedTask(this, new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (timerMap.get(e.getEntity().getName()) != null) {
+                                        if (timerMap.get(e.getEntity().getName()) == 5) {
+                                            if (map.get(e.getEntity().getName()) != null) {
+                                                map.remove(e.getEntity().getName());
+                                            }
+                                            timerMap.remove(e.getEntity().getName());
+                                        }
+                                    }
+                                }
+                            }, (getConfig().getInt("Timer") * 20L));
+                        }
+                    } else {
+                        map.put(e.getEntity().getName(), arrowMap.get(e.getDamager().getEntityId()));
+
+                        if (timerMap.get(e.getEntity().getName()) != null) {
+                            if (timerMap.get(e.getEntity().getName()) != 6) {
+                                timerMap.remove(e.getEntity().getName());
+                                timerMap.put(e.getEntity().getName(), 6);
+                            }
+                        }
+
+                        Bukkit.getScheduler().scheduleAsyncDelayedTask(this, new Runnable() {
+                            @Override
+                            public void run() {
+                                if (timerMap.get(e.getEntity().getName()) != null) {
+                                    if (timerMap.get(e.getEntity().getName()) == 6) {
+                                        if (map.get(e.getEntity().getName()) != null) {
+                                            map.remove(e.getEntity().getName());
+                                        }
+                                        timerMap.remove(e.getEntity().getName());
+                                    }
+                                }
+                            }
+                        }, (getConfig().getInt("Timer") * 20L));
+                    }
+                }
+            }
         }
+    }
+
+    @EventHandler
+    public void onPlayerFireArrow(EntityShootBowEvent e){
+        if (e.getEntity() instanceof Player){
+            arrowMap.put(e.getProjectile().getEntityId(), Objects.requireNonNull(((Player) e.getEntity()).getPlayer()).getName());
+        }
+    }
+
+    @EventHandler
+    public void onArrowCollide(ProjectileHitEvent e){
+        Bukkit.getScheduler().scheduleAsyncDelayedTask(this, new Runnable() {
+            public void run() {
+                if (arrowMap != null){
+                    if (arrowMap.containsKey(e.getEntity().getEntityId())){
+                        arrowMap.remove(e.getEntity().getEntityId());
+                    }
+                }
+            }
+        }, 20L);
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -205,4 +311,3 @@ public final class CreditVoidKill extends JavaPlugin implements Listener {
     }
 
 }
- 
